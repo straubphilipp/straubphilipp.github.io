@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avian & Wild - Nature & Birding Adventures</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        forest: {
+                            50: '#f2f7f4',
+                            100: '#e1ede6',
+                            500: '#2d6a4f',
+                            700: '#1b4332',
+                            800: '#081c15',
+                            900: '#040f0b',
+                        },
+                        amber: {
+                            500: '#d97706',
+                            600: '#b45309',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Leaflet JS & CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+        .lightbox-open { overflow: hidden; }
+        /* Map pin styling override */
+        .leaflet-popup-content-wrapper { border-radius: 0.75rem; padding: 4px; }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 dark:bg-stone-900 dark:text-stone-100 font-sans transition-colors duration-300">
+
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 w-full z-40 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="#" class="flex items-center space-x-2 text-forest-700 dark:text-forest-100 font-bold text-xl tracking-wide">
+                    <i class="fa-solid fa-crow text-forest-500"></i>
+                    <span>WildWings</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                    <a href="#about" class="hover:text-forest-500 transition-colors">About Me</a>
+                    <a href="#gallery" class="hover:text-forest-500 transition-colors">Gallery</a>
+                    <a href="#blog" class="hover:text-forest-500 transition-colors">Blog & Trip Reports</a>
+                    <a href="#map" class="hover:text-forest-500 transition-colors">Hotspots Map</a>
+                </div>
+
+                <!-- Dark Mode Toggle & Mobile Menu Btn -->
+                <div class="flex items-center space-x-4">
+                    <button id="themeToggle" class="p-2 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors" aria-label="Toggle Dark Mode">
+                        <i class="fa-solid fa-moon text-stone-600 dark:hidden"></i>
+                        <i class="fa-solid fa-sun text-amber-400 hidden dark:block"></i>
+                    </button>
+                    <button id="mobileMenuBtn" class="md:hidden p-2 text-stone-600 dark:text-stone-300" aria-label="Open Navigation Menu">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden border-b border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 px-4 pt-2 pb-4 space-y-2">
+            <a href="#about" class="block py-2 text-stone-700 dark:text-stone-200 hover:text-forest-500">About Me</a>
+            <a href="#gallery" class="block py-2 text-stone-700 dark:text-stone-200 hover:text-forest-500">Gallery</a>
+            <a href="#blog" class="block py-2 text-stone-700 dark:text-stone-200 hover:text-forest-500">Blog & Trip Reports</a>
+            <a href="#map" class="block py-2 text-stone-700 dark:text-stone-200 hover:text-forest-500">Hotspots Map</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative h-screen flex items-center justify-center text-center bg-cover bg-center" style="background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80');">
+        <div class="max-w-4xl px-4 sm:px-6 lg:px-8 text-white z-10">
+            <span class="inline-block px-3 py-1 bg-forest-500/80 backdrop-blur-sm rounded-full text-xs font-semibold uppercase tracking-wider mb-4">Nature & Wildlife Photography</span>
+            <h1 class="text-4xl sm:text-6xl font-serif font-bold tracking-tight mb-4 drop-shadow-md">Capturing Nature’s Fleeting Moments</h1>
+            <p class="text-lg sm:text-xl text-stone-200 max-w-2xl mx-auto font-light mb-8">Exploring pristine habitats, tracking wild bird species, and sharing stories from field trips around the world.</p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#gallery" class="w-full sm:w-auto px-6 py-3 bg-forest-500 hover:bg-forest-700 text-white font-medium rounded-lg transition shadow-lg flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-compass"></i>
+                    <span>Explore Gallery</span>
+                </a>
+                <a href="#blog" class="w-full sm:w-auto px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-medium rounded-lg transition border border-white/30 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-feather-pointed"></i>
+                    <span>Read Trip Reports</span>
+                </a>
+            </div>
+        </div>
+        <a href="#about" class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/80 hover:text-white transition animate-bounce" aria-label="Scroll Down">
+            <i class="fa-solid fa-chevron-down text-2xl"></i>
+        </a>
+    </section>
+
+    <!-- About Me Section -->
+    <section id="about" class="py-20 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Profile Image -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-64 h-64 sm:w-80 sm:h-80 rounded-2xl overflow-hidden shadow-2xl ring-4 ring-forest-500/20">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80" alt="Profile Photo" class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <!-- Story & Stats -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div>
+                        <span class="text-forest-500 font-semibold uppercase tracking-wider text-sm">Hello, I'm Alex</span>
+                        <h2 class="text-3xl sm:text-4xl font-serif font-bold text-stone-900 dark:text-stone-100 mt-1">Avian Explorer & Conservationist</h2>
+                    </div>
+                    <p class="text-stone-600 dark:text-stone-300 leading-relaxed">
+                        Welcome to my digital corner of the wilderness! I am a passionate field photographer and birder dedicated to documenting biodiversity. Armed with my telephoto lens and binoculars, I spend early mornings in wetlands, dense woodlands, and coastal reserves.
+                    </p>
+                    <p class="text-stone-600 dark:text-stone-300 leading-relaxed">
+                        My goal is simple: to share the beauty of birds and ecosystems to advocate for wildlife preservation and habitat protection.
+                    </p>
+
+                    <!-- Birding Stats Grid -->
+                    <div class="grid grid-cols-3 gap-4 pt-4 border-t border-stone-200 dark:border-stone-800 text-center">
+                        <div class="bg-stone-50 dark:bg-stone-800 p-4 rounded-xl border border-stone-200/60 dark:border-stone-700">
+                            <span class="block text-2xl sm:text-3xl font-bold text-forest-500">640+</span>
+                            <span class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 font-medium">Life List Species</span>
+                        </div>
+                        <div class="bg-stone-50 dark:bg-stone-800 p-4 rounded-xl border border-stone-200/60 dark:border-stone-700">
+                            <span class="block text-2xl sm:text-3xl font-bold text-forest-500">18</span>
+                            <span class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 font-medium">Countries Explored</span>
+                        </div>
+                        <div class="bg-stone-50 dark:bg-stone-800 p-4 rounded-xl border border-stone-200/60 dark:border-stone-700">
+                            <span class="block text-2xl sm:text-3xl font-bold text-forest-500">42</span>
+                            <span class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 font-medium">2026 Lifers</span>
+                        </div>
+                    </div>
+
+                    <!-- Social / eBird Links -->
+                    <div class="flex items-center space-x-4 pt-2">
+                        <a href="https://ebird.org" target="_blank" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-sm font-medium transition flex items-center space-x-2">
+                            <i class="fa-solid fa-binoculars"></i>
+                            <span>View eBird Profile</span>
+                        </a>
+                        <a href="#" class="p-2 text-stone-500 hover:text-forest-500 dark:text-stone-400 transition text-xl" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="p-2 text-stone-500 hover:text-forest-500 dark:text-stone-400 transition text-xl" title="Twitter/X"><i class="fa-brands fa-x-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Photo Gallery Section -->
+    <section id="gallery" class="py-20 bg-stone-50 dark:bg-stone-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="text-forest-500 font-semibold uppercase tracking-wider text-sm">Portfolio</span>
+                <h2 class="text-3xl sm:text-4xl font-serif font-bold text-stone-900 dark:text-stone-100 mt-1">Nature Photography</h2>
+                <p class="text-stone-600 dark:text-stone-400 mt-2">Filter through my recent field photos or click any image for gear details and high resolution.</p>
+            </div>
+
+            <!-- Gallery Filter Buttons -->
+            <div class="flex flex-wrap justify-center gap-2 mb-10">
+                <button class="filter-btn active px-4 py-2 rounded-full text-sm font-medium bg-forest-500 text-white shadow-sm transition" data-filter="all">All Photos</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition" data-filter="birds">Birds</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition" data-filter="wildlife">Wildlife</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition" data-filter="landscapes">Landscapes</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="galleryGrid">
+                
+                <!-- Photo Card 1 -->
+                <div class="gallery-item group relative overflow-hidden rounded-xl shadow-md bg-white dark:bg-stone-800 cursor-pointer" data-category="birds" 
+                     data-src="https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=1200&q=80" 
+                     data-title="European Kingfisher" 
+                     data-location="Danube Delta, Romania"
+                     data-exif="600mm | f/4 | 1/2000s | ISO 400">
+                    <img src="https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=600&q=80" alt="Kingfisher" class="w-full h-64 object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 p-4 flex flex-col justify-end text-white">
+                        <span class="text-xs text-amber-400 font-semibold tracking-wide uppercase">Birds</span>
+                        <h3 class="font-bold text-lg">European Kingfisher</h3>
+                        <p class="text-xs text-stone-300"><i class="fa-solid fa-location-dot"></i> Danube Delta, Romania</p>
+                    </div>
+                </div>
+
+                <!-- Photo Card 2 -->
+                <div class="gallery-item group relative overflow-hidden rounded-xl shadow-md bg-white dark:bg-stone-800 cursor-pointer" data-category="landscapes"
+                     data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80" 
+                     data-title="Misty Rainforest Canopy" 
+                     data-location="Monteverde, Costa Rica"
+                     data-exif="24mm | f/8 | 1/250s | ISO 100">
+                    <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80" alt="Rainforest" class="w-full h-64 object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 p-4 flex flex-col justify-end text-white">
+                        <span class="text-xs text-amber-400 font-semibold tracking-wide uppercase">Landscapes</span>
+                        <h3 class="font-bold text-lg">Misty Rainforest Canopy</h3>
+                        <p class="text-xs text-stone-300"><i class="fa-solid fa-location-dot"></i> Monteverde, Costa Rica</p>
+                    </div>
+                </div>
+
+                <!-- Photo Card 3 -->
+                <div class="gallery-item group relative overflow-hidden rounded-xl shadow-md bg-white dark:bg-stone-800 cursor-pointer" data-category="birds"
+                     data-src="https://images.unsplash.com/photo-1551085254-e96b210df58a?auto=format&fit=crop&w=1200&q=80" 
+                     data-title="Atlantic Puffin" 
+                     data-location="Farne Islands, UK"
+                     data-exif="400mm | f/5.6 | 1/1600s | ISO 250">
+                    <img src="https://images.unsplash.com/photo-1551085254-e96b210df58a?auto=format&fit=crop&w=600&q=80" alt="Puffin" class="w-full h-64 object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 p-4 flex flex-col justify-end text-white">
+                        <span class="text-xs text-amber-400 font-semibold tracking-wide uppercase">Birds</span>
+                        <h3 class="font-bold text-lg">Atlantic Puffin</h3>
+                        <p class="text-xs text-stone-300"><i class="fa-solid fa-location-dot"></i> Farne Islands, UK</p>
+                    </div>
+                </div>
+
+                <!-- Photo Card 4 -->
+                <div class="gallery-item group relative overflow-hidden rounded-xl shadow-md bg-white dark:bg-stone-800 cursor-pointer" data-category="wildlife"
+                     data-src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1200&q=80" 
+                     data-title="African Bush Elephant" 
+                     data-location="Maasai Mara, Kenya"
+                     data-exif="300mm | f/4 | 1/1000s | ISO 200">
+                    <img src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=600&q=80" alt="Elephant" class="w-full h-64 object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 p-4 flex flex-col justify-end text-white">
+                        <span class="text-xs text-amber-400 font-semibold tracking-wide uppercase">Wildlife</span>
+                        <h3 class="font-bold text-lg">African Bush Elephant</h3>
+                        <p class="text-xs text-stone-300"><i class="fa-solid fa-location-dot"></i> Maasai Mara, Kenya</p>
+                    </div>
+                </div>
+
+                <!-- Photo Card 5 -->
+                <div class="gallery-item group relative overflow-hidden rounded-xl shadow-md bg-white dark:bg-stone-800 cursor-pointer" data-category="birds"
+                     data-src="https://images.unsplash.com/photo-1574063413132-355dbfd83e0c?auto=format&fit=crop&w=1200&q=80" 
+                     data-title="Barn Owl Flight" 
+                     data-location="Norfolk, England"
+                     data-exif="500mm | f/4 | 1/3200s | ISO 800">
+                    <img src="https://images.unsplash.com/photo-1574063413132-355dbfd83e0c?auto=format&fit=crop&w=600&q=80" alt="Owl" class="w-full h-64 object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 p-4 flex flex-col justify-end text-white">
+                        <span class="text-xs text-amber-400 font-semibold tracking-wide uppercase">Birds</span>
+                        <h3 class="font-bold text-lg">Barn Owl Flight</h3>
+                        <p class="text-xs text-stone-300"><i class="fa-solid fa-location-dot"></i> Norfolk, England</p>
+                    </div>
+                </div>
+
+                <!-- Photo Card 6 -->
+                <div class="gallery-item group relative overflow-hidden rounded-xl shadow-md bg-white dark:bg-stone-800 cursor-pointer" data-category="landscapes"
+                     data-src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80" 
+                     data-title="Alpine Lake Sunrise" 
+                     data-location="Yosemite National Park, USA"
+                     data-exif="16mm | f/11 | 1/15s | ISO 100">
+                    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Alpine Lake" class="w-full h-64 object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 p-4 flex flex-col justify-end text-white">
+                        <span class="text-xs text-amber-400 font-semibold tracking-wide uppercase">Landscapes</span>
+                        <h3 class="font-bold text-lg">Alpine Lake Sunrise</h3>
+                        <p class="text-xs text-stone-300"><i class="fa-solid fa-location-dot"></i> Yosemite, USA</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog & Trip Reports Section -->
+    <section id="blog" class="py-20 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-forest-500 font-semibold uppercase tracking-wider text-sm">Field Notes</span>
+                <h2 class="text-3xl sm:text-4xl font-serif font-bold text-stone-900 dark:text-stone-100 mt-1">Trip Reports & Guides</h2>
+                <p class="text-stone-600 dark:text-stone-400 mt-2">Detailed destination overviews, key bird species checklist highlights, and downloadable eBird trip logs.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Blog Card 1 -->
+                <article class="bg-stone-50 dark:bg-stone-800 rounded-2xl overflow-hidden shadow-md border border-stone-200/80 dark:border-stone-700/60 flex flex-col">
+                    <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=800&q=80" alt="Costa Rica Birding" class="h-48 w-full object-cover">
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 mb-2">
+                                <span><i class="fa-regular fa-calendar mr-1"></i> Oct 14, 2025</span>
+                                <span class="bg-forest-100 dark:bg-forest-900/60 text-forest-700 dark:text-forest-300 px-2 py-0.5 rounded font-medium">Costa Rica</span>
+                            </div>
+                            <h3 class="font-serif font-bold text-xl text-stone-900 dark:text-stone-100 mb-2">Chasing the Resplendent Quetzal in Savegre</h3>
+                            <p class="text-stone-600 dark:text-stone-300 text-sm line-clamp-3 mb-4">
+                                High in the cloud forests of San Gerardo de Dota, we spent three mornings tracking the elusive Quetzal and spotted over 45 high-altitude endemics.
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 border-t border-stone-200 dark:border-stone-700">
+                            <button onclick="openBlogModal('blog-1')" class="text-forest-500 hover:text-forest-700 text-sm font-semibold flex items-center space-x-1">
+                                <span>Read Article</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                            <a href="https://ebird.org/tripreport/12345" target="_blank" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md font-medium flex items-center space-x-1.5">
+                                <i class="fa-solid fa-list-check"></i>
+                                <span>eBird Report</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Blog Card 2 -->
+                <article class="bg-stone-50 dark:bg-stone-800 rounded-2xl overflow-hidden shadow-md border border-stone-200/80 dark:border-stone-700/60 flex flex-col">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Seabirds" class="h-48 w-full object-cover">
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 mb-2">
+                                <span><i class="fa-regular fa-calendar mr-1"></i> Jun 02, 2025</span>
+                                <span class="bg-forest-100 dark:bg-forest-900/60 text-forest-700 dark:text-forest-300 px-2 py-0.5 rounded font-medium">Scotland</span>
+                            </div>
+                            <h3 class="font-serif font-bold text-xl text-stone-900 dark:text-stone-100 mb-2">Summer Pelagics & Cliff Colonies in Shetland</h3>
+                            <p class="text-stone-600 dark:text-stone-300 text-sm line-clamp-3 mb-4">
+                                Witnessing thousands of Gannets, Guillemots, and Puffins nesting along dramatic sea cliffs in northern Scotland.
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 border-t border-stone-200 dark:border-stone-700">
+                            <button onclick="openBlogModal('blog-2')" class="text-forest-500 hover:text-forest-700 text-sm font-semibold flex items-center space-x-1">
+                                <span>Read Article</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                            <a href="https://ebird.org/tripreport/67890" target="_blank" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md font-medium flex items-center space-x-1.5">
+                                <i class="fa-solid fa-list-check"></i>
+                                <span>eBird Report</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Blog Card 3 -->
+                <article class="bg-stone-50 dark:bg-stone-800 rounded-2xl overflow-hidden shadow-md border border-stone-200/80 dark:border-stone-700/60 flex flex-col">
+                    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80" alt="Wetlands" class="h-48 w-full object-cover">
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 mb-2">
+                                <span><i class="fa-regular fa-calendar mr-1"></i> Mar 18, 2025</span>
+                                <span class="bg-forest-100 dark:bg-forest-900/60 text-forest-700 dark:text-forest-300 px-2 py-0.5 rounded font-medium">USA</span>
+                            </div>
+                            <h3 class="font-serif font-bold text-xl text-stone-900 dark:text-stone-100 mb-2">Spring Migration Hotline: Cape May Point</h3>
+                            <p class="text-stone-600 dark:text-stone-300 text-sm line-clamp-3 mb-4">
+                                Key strategies for catching the spring warbler fallout and raptor migration in one of North America's premier birding hubs.
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 border-t border-stone-200 dark:border-stone-700">
+                            <button onclick="openBlogModal('blog-3')" class="text-forest-500 hover:text-forest-700 text-sm font-semibold flex items-center space-x-1">
+                                <span>Read Article</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                            <a href="https://ebird.org/tripreport/54321" target="_blank" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md font-medium flex items-center space-x-1.5">
+                                <i class="fa-solid fa-list-check"></i>
+                                <span>eBird Report</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Destination Map Section -->
+    <section id="map" class="py-20 bg-stone-50 dark:bg-stone-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="text-forest-500 font-semibold uppercase tracking-wider text-sm">Interactive Map</span>
+                <h2 class="text-3xl sm:text-4xl font-serif font-bold text-stone-900 dark:text-stone-100 mt-1">Featured Birding Hotspots</h2>
+                <p class="text-stone-600 dark:text-stone-400 mt-2">Click on the markers on the map below to discover key locations from past expeditions.</p>
+            </div>
+
+            <!-- Map Container -->
+            <div class="rounded-2xl overflow-hidden shadow-xl border border-stone-200 dark:border-stone-700 h-[450px] w-full z-10" id="leafletMap"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-forest-900 text-stone-300 py-12 border-t border-forest-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-2 text-white font-bold text-xl">
+                <i class="fa-solid fa-crow text-emerald-400"></i>
+                <span>WildWings Portfolio</span>
+            </div>
+            <p class="text-xs text-stone-400">© 2026 Nature & Birding Adventures. Built for GitHub Pages.</p>
+            <div class="flex space-x-4">
+                <a href="#" class="text-stone-400 hover:text-white transition text-lg"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="text-stone-400 hover:text-white transition text-lg"><i class="fa-brands fa-github"></i></a>
+                <a href="https://ebird.org" target="_blank" class="text-stone-400 hover:text-white transition text-lg"><i class="fa-solid fa-binoculars"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Photo Lightbox Modal -->
+    <div id="lightbox" class="fixed inset-0 z-50 bg-black/90 hidden backdrop-blur-md flex items-center justify-center p-4">
+        <button id="closeLightbox" class="absolute top-6 right-6 text-white text-3xl hover:text-amber-400 transition" aria-label="Close Preview">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="max-w-4xl w-full flex flex-col items-center">
+            <img id="lightboxImg" src="" alt="Enlarged preview" class="max-h-[75vh] w-auto rounded-lg shadow-2xl object-contain">
+            <div class="mt-4 text-center text-white">
+                <h3 id="lightboxTitle" class="text-xl font-bold font-serif"></h3>
+                <p id="lightboxLocation" class="text-sm text-stone-300 mt-1"></p>
+                <span id="lightboxExif" class="inline-block mt-2 text-xs bg-white/10 px-3 py-1 rounded-full font-mono text-amber-300"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Article Modal -->
+    <div id="blogModal" class="fixed inset-0 z-50 bg-black/75 hidden backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-stone-800 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 relative shadow-2xl">
+            <button onclick="closeBlogModal()" class="absolute top-4 right-4 text-stone-500 hover:text-stone-800 dark:hover:text-white text-2xl" aria-label="Close Article">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <span id="modalDate" class="text-xs text-forest-500 font-semibold uppercase"></span>
+            <h3 id="modalTitle" class="text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 mt-1 mb-4"></h3>
+            <div id="modalContent" class="text-stone-600 dark:text-stone-300 space-y-4 text-sm sm:text-base leading-relaxed"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript Interactions -->
+    <script>
+        // 1. Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // 2. Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 3. Photo Gallery Filter
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-forest-500', 'text-white');
+                    b.classList.add('bg-white', 'dark:bg-stone-800', 'text-stone-700', 'dark:text-stone-300');
+                });
+                btn.classList.add('active', 'bg-forest-500', 'text-white');
+                btn.classList.remove('bg-white', 'dark:bg-stone-800', 'text-stone-700', 'dark:text-stone-300');
+
+                const filter = btn.getAttribute('data-filter');
+
+                galleryItems.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 4. Photo Lightbox Modal Logic
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxTitle = document.getElementById('lightboxTitle');
+        const lightboxLocation = document.getElementById('lightboxLocation');
+        const lightboxExif = document.getElementById('lightboxExif');
+        const closeLightbox = document.getElementById('closeLightbox');
+
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                lightboxImg.src = item.getAttribute('data-src');
+                lightboxTitle.textContent = item.getAttribute('data-title');
+                lightboxLocation.innerHTML = `<i class="fa-solid fa-location-dot mr-1"></i> ${item.getAttribute('data-location')}`;
+                lightboxExif.textContent = item.getAttribute('data-exif');
+                lightbox.classList.remove('hidden');
+                document.body.classList.add('lightbox-open');
+            });
+        });
+
+        closeLightbox.addEventListener('click', () => {
+            lightbox.classList.add('hidden');
+            document.body.classList.remove('lightbox-open');
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                lightbox.classList.add('hidden');
+                document.body.classList.remove('lightbox-open');
+            }
+        });
+
+        // 5. Blog Article Modal Logic
+        const blogArticlesData = {
+            'blog-1': {
+                title: 'Chasing the Resplendent Quetzal in Savegre',
+                date: 'October 14, 2025 | Costa Rica',
+                content: `<p>San Gerardo de Dota is legendary among birders for one specific reason: the Resplendent Quetzal. Nestled in a deep valley surrounded by cloud forest, the cool mountain air here feels worlds away from the tropical coastlines.</p>
+                          <p>We woke up at 5:30 AM to meet our guide near a grove of Wild Avocado trees. Within twenty minutes of silent waiting, a male Quetzal swooped in—its vibrant emerald plumage and long tail streamers taking our breath away.</p>
+                          <p>Other highlight species logged included the Fiery-throated Hummingbird, Collared Redstart, and Black-faced Solitaire.</p>`
+            },
+            'blog-2': {
+                title: 'Summer Pelagics & Cliff Colonies in Shetland',
+                date: 'June 02, 2025 | Scotland',
+                content: `<p>Exploring the northernmost reaches of the UK during summer provides almost endless daylight and incredible seabird spectacles.</p>
+                          <p>At Hermaness National Nature Reserve, the sheer scale of the Northern Gannet colony is astounding. The sky is filled with thousands of soaring birds against dramatic sea stacks.</p>
+                          <p>We also took a boat trip to Noss to photograph Atlantic Puffins carrying sand eels back to their burrows.</p>`
+            },
+            'blog-3': {
+                title: 'Spring Migration Hotline: Cape May Point',
+                date: 'March 18, 2025 | USA',
+                content: `<p>Cape May, New Jersey is widely regarded as the birth place of American birding enthusiasm. During spring migration, passerines arrive after crossing the Delaware Bay, resting in maritime forests.</p>
+                          <p>We spent four days tracking warblers, counting 24 warbler species including Cape May Warbler, Blackburnian Warbler, and Prothonotary Warbler.</p>`
+            }
+        };
+
+        function openBlogModal(blogId) {
+            const data = blogArticlesData[blogId];
+            if (data) {
+                document.getElementById('modalTitle').textContent = data.title;
+                document.getElementById('modalDate').textContent = data.date;
+                document.getElementById('modalContent').innerHTML = data.content;
+                document.getElementById('blogModal').classList.remove('hidden');
+                document.body.classList.add('lightbox-open');
+            }
+        }
+
+        function closeBlogModal() {
+            document.getElementById('blogModal').classList.add('hidden');
+            document.body.classList.remove('lightbox-open');
+        }
+
+        // 6. Initialize Leaflet Map
+        window.onload = function() {
+            // Center map around a global view or your primary region
+            const map = L.map('leafletMap').setView([20.0, -10.0], 2);
+
+            // OpenStreetMap Tile Layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            // Sample Hotspot Locations
+            const hotspots = [
+                {
+                    name: "Savegre Cloud Forest",
+                    lat: 9.551,
+                    lng: -83.808,
+                    desc: "Prime location for Resplendent Quetzal and highland endemics."
+                },
+                {
+                    name: "Shetland Islands",
+                    lat: 60.354,
+                    lng: -1.213,
+                    desc: "Massive cliff breeding seabird colonies and pelagic trips."
+                },
+                {
+                    name: "Cape May Point",
+                    lat: 38.932,
+                    lng: -74.960,
+                    desc: "Famous spring/fall migration bottleneck for warblers & raptors."
+                },
+                {
+                    name: "Danube Delta",
+                    lat: 45.166,
+                    lng: 29.650,
+                    desc: "Europe's largest wetland habitat for Pelicans and Herons."
+                }
+            ];
+
+            // Add pins for each hotspot
+            hotspots.forEach(spot => {
+                const marker = L.marker([spot.lat, spot.lng]).addTo(map);
+                marker.bindPopup(`
+                    <div style="font-family: sans-serif; padding: 2px;">
+                        <h4 style="font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #1b4332;">${spot.name}</h4>
+                        <p style="font-size: 12px; color: #444; margin: 0;">${spot.desc}</p>
+                    </div>
+                `);
+            });
+        };
+    </script>
+</body>
+</html>
